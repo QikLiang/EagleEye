@@ -63,6 +63,7 @@ def recognize_people(people_folder = "people\\"):
     video = cv2.VideoCapture(0)
 
     while True:
+        time.sleep(1/30)
         if not video.isOpened():
             raise Exception('Unable to load camera.')
 
