@@ -44,7 +44,7 @@ def recognize_people(people_folder = "people\\"):
 
     faceCascade = cv2.CascadeClassifier("lbpcascade_frontalface.xml")
     rec = cv2.face.LBPHFaceRecognizer_create()
-    threshold = 80
+    threshold = 120
     images = []
     labels = []
     labels_people = {}
