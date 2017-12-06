@@ -1,6 +1,7 @@
 import cv2
 import os
 import numpy as np
+import time
 from PIL import Image
 
 rec = cv2.face.LBPHFaceRecognizer_create()
@@ -10,18 +11,25 @@ path = 'dataSet'
 cascPath = "lbpcascade_frontalface.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 
+def resize(img, size=(100, 100)):
+    if img.shape < size:
+        image_norm = cv2.resize(img, size, interpolation=cv2.INTER_AREA)
+    else:
+        image_norm = cv2.resize(img, size, interpolation=cv2.INTER_CUBIC)
+    return image_norm
+
 def detectFace(faces, img):
     for (x, y, w, h) in faces:
         cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
         faceImg=Image.fromarray(img).convert('L')
         faceNp=np.array(faceImg, 'uint8')
-        label, conf = rec.predict(faceNp)
+        label, conf = rec.predict(resize(faceNp))
         print(label, conf)
-        if conf < 75:
+        if conf < 140:
             if label == 1:
-                name = "Christian"
-            elif label == 2:
                 name = "Matthew"
+            elif label == 2:
+                name = "Christian"
             elif label == 3:
                 name = "Qi"
             else:
@@ -35,9 +43,9 @@ def convertToRGB(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 video_capture = cv2.VideoCapture(0)
-anterior = 0
 
 while True:
+    time.sleep(1/30)
     if not video_capture.isOpened():
         raise Exception('Unable to load camera.')
 
@@ -54,9 +62,6 @@ while True:
 
     # Draw a rectangle around the faces
     detectFace(faces, frame)
-
-    # if anterior != len(faces):
-    #     anterior = len(faces)
 
     # Display the resulting frame
     cv2.imshow('Video', frame)
