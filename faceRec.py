@@ -4,7 +4,6 @@ import sys
 import numpy as np
 import time
 from PIL import Image
-from cv2 import __version__
 
 def modifyFrame(faces, frame, size=(100, 100)):
     images_rectangle = []
