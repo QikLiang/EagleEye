@@ -10,6 +10,8 @@ if not os.path.exists('people\\' + person + '\\'):
 
 counter = 0
 for fi in os.listdir('process'):
+    if ".jpg" not in fi or ".png" not in fi:
+        continue
     img = cv2.imread('process\\' + fi)
     image_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     scale_factor = 1.2
