@@ -6,6 +6,7 @@ import time
 
 def greet(message):
     name = str(message.payload, 'ascii')
+    print("Received", name)
     if name == "Qi":
         name = "Chee"
 
