@@ -4,7 +4,3 @@ numpy
 matplotlib
 Pillow
 opencv-contrib-python
-# text to speech
-pyttsx3
-# AWS
-AWSIoTPythonSDK
