@@ -5,11 +5,11 @@
 By Qi Liang, Christian Rodrigues, and Matthew Yuen 
  
  
-**Goal Statement: **"To see the world through a different eye."
+**Goal Statement:** "To see the world through a different eye."
 
 We want to make a product that is based on open-source software which people can easily duplicate and use at home. This product is built from off the shelf to keep costs low and to empower laziness at home. 
  
-**Function and technical requirements: **
+**Function and technical requirements:**
 
 Eagle Eye is the perfect product for people who "work smarter, not harder."  As hardworking US citizens, people do not have enough time to do perform menial tasks such as checking doors or greeting visitors.  Eagle Eye provides both of these tasks for the user, automatically. 
 
