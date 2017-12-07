@@ -44,7 +44,7 @@ def recognize_people(people_folder = "people\\"):
 
     faceCascade = cv2.CascadeClassifier("lbpcascade_frontalface.xml")
     rec = cv2.face.LBPHFaceRecognizer_create()
-    threshold = 120
+    threshold = 85
     images = []
     labels = []
     labels_people = {}
@@ -60,9 +60,11 @@ def recognize_people(people_folder = "people\\"):
         sys.exit()
 
     video = cv2.VideoCapture(0)
+    video.set(3, 2000)
+    video.set(4,2000)
 
     while True:
-        time.sleep(1/30)
+        # time.sleep(1/60)
         if not video.isOpened():
             raise Exception('Unable to load camera.')
 

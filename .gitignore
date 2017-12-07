@@ -2,3 +2,8 @@
 *.pem
 *.crt
 __pycache__
+people/*
+process/*
+*.png
+*.jpg
+*.jpeg
