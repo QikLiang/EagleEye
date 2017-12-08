@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import time
 from PIL import Image
+from communicate import communicator
 
 def modifyFrame(faces, frame, size=(100, 100)):
     images_rectangle = []
@@ -63,6 +64,10 @@ def recognize_people(people_folder = "people\\"):
     video.set(3, 2000)
     video.set(4,2000)
 
+    sender = communicator(True, None)
+    people_found = set()
+    last_rest = time.time()
+    last_detect = time.time()
     while True:
         # time.sleep(1/60)
         if not video.isOpened():
@@ -81,13 +86,26 @@ def recognize_people(people_folder = "people\\"):
             frame, faces_img = modifyFrame(faces, frame)
             for i, face_img in enumerate(faces_img):
                 pred, conf = rec.predict(face_img)
-                print ("Prediction: " + str(labels_people[pred].capitalize()), 'Confidence: ' + str(round(conf)))
+                if time.time() - last_rest > 120:
+                    people_found = set()
+                    last_rest = time.time()
                 if conf < threshold:
+                    name = labels_people[pred].capitalize()
+                    if name not in people_found and time.time() - last_detect > 5:
+                        last_detect = time.time()
+                        people_found.add(name)
+                        sender.sendMessage(name)
+                        print("Sent")
                     cv2.putText(frame, labels_people[pred].capitalize(),
                                 (faces[i][0], faces[i][1] - 2),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1,
                                 cv2.LINE_AA)
                 else:
+                    name = "Unknown"
+                    if name not in people_found and len(people_found) > 1:
+                        people_found.add(name)
+                        sender.sendMessage(name)
+                        print("Sent")
                     cv2.putText(frame, "Unknown",
                                 (faces[i][0], faces[i][1]),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1,
