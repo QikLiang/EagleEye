@@ -6,11 +6,18 @@ import time
 
 def greet(message):
     name = str(message.payload, 'ascii')
+    print("Received", name)
     if name == "Qi":
         name = "Chee"
 
+    speech = 'Hello ' + name
+
+    if name == "Unknown":
+        speech = "Unknown entity found"
+
+
     engine = pyttsx3.init()
-    engine.say('Hello ' + name)
+    engine.say(speech)
     engine.runAndWait()
 
 receiver = communicator(False, greet)
