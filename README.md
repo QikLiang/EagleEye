@@ -24,3 +24,24 @@ A small camera looks through the peephole or is mounted near a door, and when a 
 **Specific pieces of AWS or any other cloud provider used**
 
 Eagle Eye depends on AWS for publishing SMS messages and sending emails to the owner of the device. Using the AWS IoT, AWS Lambda, and AWS SMS. AWS IoT is used to connect the Raspberry Pi's to AWS. AWS Lambda handles the code. AWS SMS sends out the SMS messages and emails to the owner.   
+
+
+
+**Run and set-up instructions:**
+
+Installation instructions:
+1. Put AWS certificates in project root
+2. run `pip install -r requirements.txt`
+3. Run ./install.sh
+
+
+Face recognition
+1. Insert one person's pictures into the `process` folder
+2. Run `python process.py`
+3. Enter person's name when prompted
+4. Repeat steps 1-3 for every person
+5. Now run `python facereq.py`
+
+
+Speaker
+1. Run `python greet.py`
