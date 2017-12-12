@@ -3,6 +3,12 @@ import os
 import sys
 import numpy as np
 import time
+import smtplib
+import re
+import getpass
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 from PIL import Image
 from communicate import communicator
 
@@ -40,6 +46,7 @@ def recognize_people(people_folder = "people\\"):
     """
     try:
         people = [person for person in os.listdir(people_folder)]
+        people = [person for person in people if not person.endswith(".txt")]
     except:
         raise Exception("Must add a person to detect")
 
@@ -57,8 +64,20 @@ def recognize_people(people_folder = "people\\"):
     try:
         rec.train(images, np.array(labels))
     except:
-        raise Exception("OpenCV Error")
+        raise Exception("OpenCV image training error")
         sys.exit()
+
+    useEmail = True
+    smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
+    smtp_server.ehlo()
+    smtp_server.starttls()
+    getEmail = input("Enter gmail email: ")
+    getPassword = getpass.getpass("Enter gmail Password: ")
+    try:
+        smtp_server.login(getEmail, getPassword)
+    except:
+        print("Email Failed -- Not Using Email")
+        useEmail = False
 
     video = cv2.VideoCapture(0)
     video.set(3, 2000)
@@ -69,7 +88,7 @@ def recognize_people(people_folder = "people\\"):
     last_rest = time.time()
     last_detect = time.time()
     while True:
-        # time.sleep(1/60)
+        time.sleep(1/60)
         if not video.isOpened():
             raise Exception('Unable to load camera.')
 
@@ -86,7 +105,7 @@ def recognize_people(people_folder = "people\\"):
             frame, faces_img = modifyFrame(faces, frame)
             for i, face_img in enumerate(faces_img):
                 pred, conf = rec.predict(face_img)
-                if time.time() - last_rest > 120:
+                if time.time() - last_rest > 300:
                     people_found = set()
                     last_rest = time.time()
                 if conf < threshold:
@@ -95,17 +114,28 @@ def recognize_people(people_folder = "people\\"):
                         last_detect = time.time()
                         people_found.add(name)
                         sender.sendMessage(name)
-                        print("Sent")
                     cv2.putText(frame, labels_people[pred].capitalize(),
                                 (faces[i][0], faces[i][1] - 2),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1,
                                 cv2.LINE_AA)
                 else:
                     name = "Unknown"
-                    if name not in people_found and len(people_found) > 1:
+                    if name not in people_found and len(people_found) >= 1:
                         people_found.add(name)
                         sender.sendMessage(name)
-                        print("Sent")
+                        if useEmail:
+                            cv2.imwrite("temp.jpg", frame)
+                            msg = MIMEMultipart()
+                            msg['Subject'] = 'Someone Unknown is at the Door!'
+                            msg['From'] = getEmail
+                            msg['To'] = getEmail
+                            text = MIMEText("Here is a picture of who was at the door:")
+                            msg.attach(text)
+                            image = MIMEImage(open("temp.jpg", 'rb').read())
+                            msg.attach(image)
+                            smtp_server.sendmail(getEmail, getEmail, msg.as_string())
+                            print("Email Sent")
+                            os.remove("temp.jpg")
                     cv2.putText(frame, "Unknown",
                                 (faces[i][0], faces[i][1]),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1,
@@ -115,6 +145,7 @@ def recognize_people(people_folder = "people\\"):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             video.release()
             cv2.destroyAllWindows()
+            smtp_server.quit()
             sys.exit()
 
 recognize_people()
