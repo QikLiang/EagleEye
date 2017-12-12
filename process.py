@@ -1,19 +1,21 @@
 import os
 import cv2
 
+file_separater = '/'
+
 cascPath = "lbpcascade_frontalface.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 size=(100, 100)
 person = input("What is the persons name: ")
 person = person.lower()
-if not os.path.exists('people\\' + person + '\\'):
-    os.makedirs('people\\' + person + '\\')
+if not os.path.exists('people/' + person + '/'):
+    os.makedirs('people/' + person + '/')
 
 counter = 0
 for fi in os.listdir('process'):
     if ".jpg" not in str(fi) and ".png" not in str(fi):
         continue
-    img = cv2.imread('process\\' + fi)
+    img = cv2.imread('process/' + fi)
     image_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     scale_factor = 1.2
     min_neighbors = 5
@@ -45,9 +47,9 @@ for fi in os.listdir('process'):
                 image_res = cv2.resize(image, size, interpolation=cv2.INTER_CUBIC)
             images_res.append(image_res)
 
-            while os.path.exists('people\\' + person + '\\' + str(counter) + '.jpg'):
+            while os.path.exists('people/' + person + '/' + str(counter) + '.jpg'):
                 counter += 1
 
-            cv2.imwrite('people\\' + person + '\\' + str(counter) + '.jpg', images_res[0])
+            cv2.imwrite('people/' + person + '/' + str(counter) + '.jpg', images_res[0])
             counter += 1
-    os.remove("process\\" + fi)
+    os.remove("process/" + fi)

@@ -59,7 +59,7 @@ def recognize_people(people_folder = "people\\"):
     for i, person in enumerate(people):
         labels_people[i] = person
         for image in os.listdir(people_folder + person):
-            images.append(cv2.imread(people_folder + person + '/' + image, 0))
+            images.append(cv2.imread(people_folder + person + '\\' + image, 0))
             labels.append(i)
     try:
         rec.train(images, np.array(labels))
@@ -87,7 +87,13 @@ def recognize_people(people_folder = "people\\"):
     people_found = set()
     last_rest = time.time()
     last_detect = time.time()
+    last_count_reset = time.time()
+    count = {person:0 for person in people}
+
     while True:
+        if time.time() - last_count_reset > 5:
+            last_count_reset = time.time()
+            count = {person:0 for person in people}
         time.sleep(1/60)
         if not video.isOpened():
             raise Exception('Unable to load camera.')
@@ -111,6 +117,9 @@ def recognize_people(people_folder = "people\\"):
                 if conf < threshold:
                     name = labels_people[pred].capitalize()
                     if name not in people_found and time.time() - last_detect > 5:
+                        count[name] += 1
+                        if count[name] < 30:
+                            continue
                         last_detect = time.time()
                         people_found.add(name)
                         sender.sendMessage(name)
